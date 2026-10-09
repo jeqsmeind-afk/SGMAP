@@ -4,19 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SGMAP - Centro de Control</title>
+    <!-- Tailwind CSS para diseño moderno -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Ajustes personalizados de Tailwind para acercarnos al Azul Transaltisa -->
+    <script>
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                transaltisa: {
+                  primary: '#0B336A', /* Azul oscuro corporativo simulado */
+                  secondary: '#1A52A0', /* Azul medio para botones */
+                  hover: '#134080' /* Azul intermedio para el hover */
+                }
+              }
+            }
+          }
+        }
+    </script>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased">
 
-    <!-- Navegación -->
-    <nav class="bg-indigo-900 text-white shadow-lg">
+    <!-- Navegación con Color Transaltisa -->
+    <nav class="bg-transaltisa-primary text-white shadow-lg">
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <i class="fas fa-satellite-dish text-2xl text-blue-400"></i>
-                <h1 class="text-xl font-bold tracking-wider">SGMAP <span class="text-sm font-light text-indigo-300">| Operaciones</span></h1>
+                <i class="fas fa-satellite-dish text-2xl text-blue-300"></i>
+                <h1 class="text-xl font-bold tracking-wider">SGMAP <span class="text-sm font-light text-blue-200">| Centro de Control</span></h1>
             </div>
-            <div class="text-sm"><i class="fas fa-user-circle text-lg align-middle mr-1"></i> Admin</div>
+            <div class="text-sm font-medium"><i class="fas fa-user-circle text-lg align-middle mr-1"></i> Centro de Control</div>
         </div>
     </nav>
 
@@ -29,7 +46,7 @@
                 <form id="ticketForm" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-600 mb-1">Proveedor</label>
-                        <select id="proveedor" class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-indigo-500" required>
+                        <select id="proveedor" class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-transaltisa-secondary outline-none" required>
                             <option value="">Seleccionar...</option>
                             <option value="WISETRACK">WISETRACK</option>
                             <option value="MIO">MIO</option>
@@ -38,7 +55,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-600 mb-1">Proyecto / Operación</label>
-                        <select id="proyecto" class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-indigo-500" required>
+                        <select id="proyecto" class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-transaltisa-secondary outline-none" required>
                             <option value="">Seleccionar Proyecto...</option>
                             <option value="Transaltisa">Transaltisa</option>
                             <option value="Quellaveco">Quellaveco</option>
@@ -50,11 +67,11 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-slate-600 mb-1">Unidad</label>
-                            <input type="text" id="unidad" placeholder="Ej. BEY899" class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-indigo-500 uppercase" required>
+                            <input type="text" id="unidad" placeholder="Ej. BEY899" class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-transaltisa-secondary uppercase outline-none" required>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-600 mb-1">Prioridad</label>
-                            <select id="prioridad" class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-indigo-500">
+                            <select id="prioridad" class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-transaltisa-secondary outline-none">
                                 <option value="Media">Media (48h)</option>
                                 <option value="Alta">Alta (24h)</option>
                                 <option value="Crítica">Crítica (4h)</option>
@@ -63,9 +80,9 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-600 mb-1">Detalle de Incidencia</label>
-                        <textarea id="incidencia" rows="3" placeholder="Descripción de la falla..." class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-indigo-500" required></textarea>
+                        <textarea id="incidencia" rows="3" placeholder="Descripción de la falla..." class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-transaltisa-secondary outline-none" required></textarea>
                     </div>
-                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-md flex justify-center items-center gap-2">
+                    <button type="submit" class="w-full bg-transaltisa-secondary hover:bg-transaltisa-hover text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-md flex justify-center items-center gap-2">
                         <i class="fas fa-paper-plane"></i> Enviar y Notificar
                     </button>
                     <p id="statusMsg" class="text-sm text-center font-medium mt-2 hidden"></p>
@@ -77,7 +94,7 @@
         <div class="lg:col-span-2 space-y-6">
             <!-- Tarjetas KPIs -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 border-l-4 border-l-blue-500">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 border-l-4 border-transaltisa-secondary">
                     <div class="text-slate-500 text-sm font-semibold mb-1">Tickets Abiertos</div>
                     <div id="kpi-abiertos" class="text-3xl font-bold text-slate-800">0</div>
                 </div>
@@ -99,9 +116,9 @@
                     <div class="flex items-center gap-3">
                         <div class="relative">
                             <i class="fas fa-search absolute left-3 top-2.5 text-slate-400"></i>
-                            <input type="text" id="buscador" placeholder="Buscar placa, ticket..." class="pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 w-full md:w-64">
+                            <input type="text" id="buscador" placeholder="Buscar placa, ticket..." class="pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-transaltisa-secondary w-full md:w-64 outline-none">
                         </div>
-                        <button class="text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-4 py-2 rounded-lg text-sm font-semibold transition" onclick="cargarTickets()"><i class="fas fa-sync-alt mr-1"></i></button>
+                        <button class="text-transaltisa-secondary bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg text-sm font-semibold transition" onclick="cargarTickets()"><i class="fas fa-sync-alt mr-1"></i></button>
                     </div>
                 </div>
                 
@@ -129,7 +146,7 @@
         const form = document.getElementById('ticketForm');
         const statusMsg = document.getElementById('statusMsg');
         
-        // REEMPLAZAR CON TU URL ACTUALIZADA
+        // ¡LA MISMA URL ACTUALIZADA!
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxmaLARWXx6IXLmgZZwx8P5kUNExKJGciy2FLKQ8ACucKzdF77Qlie4arJgH1eOPMQ/exec';
 
         // Lógica del Buscador en tiempo real
@@ -216,7 +233,7 @@
 
                     tbody.insertAdjacentHTML('beforeend', `
                         <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100">
-                            <td class="p-4 font-bold text-indigo-600">${t.ticket}</td>
+                            <td class="p-4 font-bold" style="color: #1A52A0;">${t.ticket}</td>
                             <td class="p-4 font-semibold text-slate-700">${t.proveedor}</td>
                             <td class="p-4 font-bold uppercase">${t.unidad}</td>
                             <td class="p-4"><span class="${colorEstado} py-1 px-3 rounded-full text-xs">${t.estado}</span></td>
