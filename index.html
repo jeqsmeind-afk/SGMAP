@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGMAP - Centro de Control</title>
+    <!-- Tailwind CSS para diseño moderno -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+
+    <!-- Navegación -->
+    <nav class="bg-indigo-900 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-satellite-dish text-2xl text-blue-400"></i>
+                <h1 class="text-xl font-bold tracking-wider">SGMAP <span class="text-sm font-light text-indigo-300">| Control de Proveedores</span></h1>
+            </div>
+            <div class="text-sm">
+                <i class="fas fa-user-circle text-lg align-middle mr-1"></i> Operaciones
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Panel Izquierdo: Formulario -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <h2 class="text-lg font-bold mb-4 text-slate-700 border-b pb-2">Generar Nuevo Ticket</h2>
+                
+                <form id="ticketForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-1">Proveedor</label>
+                        <select id="proveedor" class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="WISETRACK">WISETRACK</option>
+                            <option value="MIO">MIO</option>
+                            <option value="COMSATEL">COMSATEL</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-1">Proyecto / Ruta</label>
+                        <input type="text" id="proyecto" placeholder="Ej. Arequipa - Cerro Verde" class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 mb-1">Unidad</label>
+                            <input type="text" id="unidad" placeholder="Placa / Código" class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 mb-1">Prioridad</label>
+                            <select id="prioridad" class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-indigo-500 outline-none">
+                                <option value="Media">Media (48h)</option>
+                                <option value="Alta">Alta (24h)</option>
+                                <option value="Crítica">Crítica (4h)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-1">Detalle de Incidencia</label>
+                        <textarea id="incidencia" rows="3" placeholder="Descripción de la falla..." class="w-full rounded-lg border-slate-300 border p-2 focus:ring-2 focus:ring-indigo-500 outline-none" required></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-md flex justify-center items-center gap-2">
+                        <i class="fas fa-paper-plane"></i> Enviar y Notificar
+                    </button>
+                    <p id="statusMsg" class="text-sm text-center font-medium mt-2 hidden"></p>
+                </form>
+            </div>
+        </div>
+
+        <!-- Panel Derecho: Dashboard y KPIs -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Tarjetas de Indicadores (KPIs) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 border-l-4 border-l-blue-500">
+                    <div class="text-slate-500 text-sm font-semibold mb-1">Tickets Abiertos</div>
+                    <div class="text-3xl font-bold text-slate-800">12</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 border-l-4 border-l-amber-500">
+                    <div class="text-slate-500 text-sm font-semibold mb-1">Próximos a Vencer</div>
+                    <div class="text-3xl font-bold text-slate-800">3</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 border-l-4 border-l-red-500">
+                    <div class="text-slate-500 text-sm font-semibold mb-1">Vencidos (>48h)</div>
+                    <div class="text-3xl font-bold text-slate-800">1</div>
+                </div>
+            </div>
+
+            <!-- Tabla de Seguimiento Reciente -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                    <h2 class="text-lg font-bold text-slate-700">Seguimiento en Tiempo Real</h2>
+                    <button class="text-indigo-600 hover:text-indigo-800 text-sm font-semibold"><i class="fas fa-sync-alt mr-1"></i> Actualizar</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
+                                <th class="p-4 font-semibold">Ticket</th>
+                                <th class="p-4 font-semibold">Proveedor</th>
+                                <th class="p-4 font-semibold">Unidad</th>
+                                <th class="p-4 font-semibold">Estado</th>
+                                <th class="p-4 font-semibold">SLA</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm text-slate-600 divide-y divide-slate-100">
+                            <!-- Fila de ejemplo (Esto se llenará dinámicamente después) -->
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="p-4 font-medium text-indigo-600">TK-2026-0000</td>
+                                <td class="p-4">WISETRACK</td>
+                                <td class="p-4">F-102</td>
+                                <td class="p-4"><span class="bg-amber-100 text-amber-700 py-1 px-2 rounded-full text-xs font-bold">Pendiente</span></td>
+                                <td class="p-4 text-red-500 font-semibold">49 hrs (Vencido)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Lógica de conexión con Apps Script
+        const form = document.getElementById('ticketForm');
+        const statusMsg = document.getElementById('statusMsg');
+        
+        // ¡REEMPLAZA ESTA URL CON LA QUE OBTUVISTE EN APPS SCRIPT!
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxmaLARWXx6IXLmgZZwx8P5kUNExKJGciy2FLKQ8ACucKzdF77Qlie4arJgH1eOPMQ/exec';
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // UI Feedback
+            const btn = form.querySelector('button');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+            btn.disabled = true;
+
+            const payload = {
+                proveedor: document.getElementById('proveedor').value,
+                proyecto: document.getElementById('proyecto').value,
+                unidad: document.getElementById('unidad').value,
+                prioridad: document.getElementById('prioridad').value,
+                incidencia: document.getElementById('incidencia').value
+            };
+
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Evita errores de CORS de Google
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                // Éxito
+                statusMsg.textContent = "¡Ticket generado y correo enviado con éxito!";
+                statusMsg.className = "text-sm text-center font-bold mt-3 text-green-600 block";
+                form.reset();
+
+            } catch (error) {
+                statusMsg.textContent = "Error al conectar con el servidor.";
+                statusMsg.className = "text-sm text-center font-bold mt-3 text-red-600 block";
+            } finally {
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar y Notificar';
+                btn.disabled = false;
+                setTimeout(() => statusMsg.classList.add('hidden'), 5000);
+            }
+        });
+    </script>
+</body>
+</html>
