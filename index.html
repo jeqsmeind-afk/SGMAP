@@ -80,15 +80,18 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 border-l-4 border-l-blue-500">
                     <div class="text-slate-500 text-sm font-semibold mb-1">Tickets Abiertos</div>
-                    <div class="text-3xl font-bold text-slate-800">12</div>
+                    <!-- Se agregó el ID kpi-abiertos y se inicializa en 0 -->
+                    <div id="kpi-abiertos" class="text-3xl font-bold text-slate-800">0</div>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 border-l-4 border-l-amber-500">
                     <div class="text-slate-500 text-sm font-semibold mb-1">Próximos a Vencer</div>
-                    <div class="text-3xl font-bold text-slate-800">3</div>
+                    <!-- Se agregó el ID kpi-proximos y se inicializa en 0 -->
+                    <div id="kpi-proximos" class="text-3xl font-bold text-slate-800">0</div>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 border-l-4 border-l-red-500">
                     <div class="text-slate-500 text-sm font-semibold mb-1">Vencidos (>48h)</div>
-                    <div class="text-3xl font-bold text-slate-800">1</div>
+                    <!-- Se agregó el ID kpi-vencidos y se inicializa en 0 -->
+                    <div id="kpi-vencidos" class="text-3xl font-bold text-slate-800">0</div>
                 </div>
             </div>
 
@@ -110,14 +113,7 @@
                             </tr>
                         </thead>
                         <tbody class="text-sm text-slate-600 divide-y divide-slate-100">
-                            <!-- Fila de ejemplo (Esto se llenará dinámicamente después) -->
-                            <tr class="hover:bg-slate-50 transition-colors">
-                                <td class="p-4 font-medium text-indigo-600">TK-2026-0000</td>
-                                <td class="p-4">WISETRACK</td>
-                                <td class="p-4">F-102</td>
-                                <td class="p-4"><span class="bg-amber-100 text-amber-700 py-1 px-2 rounded-full text-xs font-bold">Pendiente</span></td>
-                                <td class="p-4 text-red-500 font-semibold">49 hrs (Vencido)</td>
-                            </tr>
+                            <!-- Los datos se llenarán aquí -->
                         </tbody>
                     </table>
                 </div>
@@ -130,7 +126,6 @@
         const form = document.getElementById('ticketForm');
         const statusMsg = document.getElementById('statusMsg');
         
-        // ¡REEMPLAZA ESTA URL CON LA QUE OBTUVISTE EN APPS SCRIPT!
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxmaLARWXx6IXLmgZZwx8P5kUNExKJGciy2FLKQ8ACucKzdF77Qlie4arJgH1eOPMQ/exec';
 
         form.addEventListener('submit', async (e) => {
@@ -152,7 +147,7 @@
             try {
                 const response = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // Evita errores de CORS de Google
+                    mode: 'no-cors', 
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
@@ -161,6 +156,9 @@
                 statusMsg.textContent = "¡Ticket generado y correo enviado con éxito!";
                 statusMsg.className = "text-sm text-center font-bold mt-3 text-green-600 block";
                 form.reset();
+                
+                // Actualizar la tabla después de 2 segundos para dar tiempo a que se guarde
+                setTimeout(cargarTickets, 2000);
 
             } catch (error) {
                 statusMsg.textContent = "Error al conectar con el servidor.";
@@ -173,26 +171,34 @@
         });
     </script>
     <script>
-    // Función para cargar los datos en la tabla
+    // Función para cargar los datos en la tabla y actualizar KPIs
     async function cargarTickets() {
         const tbody = document.querySelector('tbody');
         tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500"><i class="fas fa-spinner fa-spin mr-2"></i> Cargando tickets...</td></tr>';
         
         try {
-            // Reutilizamos tu URL de Apps Script (asegúrate de que esté actualizada)
             const response = await fetch(APPS_SCRIPT_URL);
             const tickets = await response.json();
             
             tbody.innerHTML = ''; // Limpiamos la tabla
             
             let abiertos = 0;
+            let proximos = 0;
+            let vencidos = 0;
             
             tickets.forEach(t => {
-                if(t.estado !== 'Solucionada' && t.estado !== 'Cerrada') abiertos++;
+                // Lógica para KPIs
+                if(t.estado !== 'Solucionada' && t.estado !== 'Cerrada') {
+                    abiertos++;
+                    // Simulación básica de SLA para la prueba
+                    if(t.tiempo.includes('48') || t.tiempo.includes('vencido')) vencidos++;
+                    else if(t.tiempo.includes('24') || t.tiempo.includes('proximo')) proximos++;
+                }
                 
                 // Color del estado
-                let colorEstado = 'bg-amber-100 text-amber-700'; // Pendiente
-                if(t.estado === 'Registrada') colorEstado = 'bg-blue-100 text-blue-700';
+                let colorEstado = 'bg-slate-100 text-slate-700'; 
+                if(t.estado === 'Pendiente') colorEstado = 'bg-amber-100 text-amber-700';
+                if(t.estado === 'En atención') colorEstado = 'bg-blue-100 text-blue-700';
                 if(t.estado === 'Solucionada') colorEstado = 'bg-green-100 text-green-700';
                 
                 const fila = `
@@ -207,8 +213,10 @@
                 tbody.insertAdjacentHTML('beforeend', fila);
             });
             
-            // Actualizamos el KPI de Tickets Abiertos
-            document.querySelector('.text-3xl.font-bold.text-slate-800').textContent = abiertos;
+            // Actualizamos visualmente las 3 tarjetas de KPIs
+            document.getElementById('kpi-abiertos').textContent = abiertos;
+            document.getElementById('kpi-proximos').textContent = proximos;
+            document.getElementById('kpi-vencidos').textContent = vencidos;
             
         } catch (error) {
             console.error("Error cargando datos", error);
@@ -221,7 +229,5 @@
     // Botón actualizar
     document.querySelector('button.text-indigo-600').addEventListener('click', cargarTickets);
     </script>
-
-    
 </body>
 </html>
